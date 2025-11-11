@@ -1,0 +1,31 @@
+# dependencies
+node_modules
+
+# sst
+.sst
+.build
+
+# opennext
+.open-next
+
+# misc
+.DS_Store
+
+# local env files
+.env
+.env.*
+!.env.example
+
+# svelte
+.svelte-kit
+
+# vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# custom
+base.sh
+.temp/
+
+# Nextjs
+.next

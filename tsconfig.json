@@ -1,0 +1,9 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "exclude": ["packages", "**/.svelte-kit/**"],
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "esnext",
+    "moduleResolution": "node"
+  }
+}

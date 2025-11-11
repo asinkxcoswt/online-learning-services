@@ -1,0 +1,16 @@
+{
+  "search.exclude": {
+    "**/.sst": true
+  },
+  "testing.automaticallyOpenPeekView": "never",
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  }
+}
