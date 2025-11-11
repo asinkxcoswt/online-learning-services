@@ -1,4 +1,4 @@
-name: "Terraform CI"
+name: "SST CD"
 
 on:
   push:
