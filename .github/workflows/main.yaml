@@ -1,4 +1,4 @@
-name: "Terraform CI"
+name: "SST CD"
 
 on:
   push:
@@ -6,28 +6,52 @@ on:
       - main
 
 jobs:
-  terraform-apply:
-    name: "Terraform Apply (main)"
+  
+  deploy:
+    name: "Build & Deploy (main)"
     runs-on: ubuntu-latest
+    needs: build
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Use Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
 
-      - name: Configure AWS Credentials
+      - name: Restore yarn cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: yarn-cache-${{ runner.os }}-v1-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-cache-${{ runner.os }}-v1-
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Terraform Init
-        run: terraform init -input=false
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve plan.tfplan
-        working-directory: ${{ env.TF_WORKING_DIR }}
+      - name: Deploy to production (SST)
+        env:
+          # ensure AWS creds and any other env vars are present via secrets
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          # optionally pass STAGE or SST-specific envs if your script expects them
+          STAGE: production
+        run: yarn deploy:production
