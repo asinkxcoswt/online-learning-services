@@ -10,6 +10,19 @@ type Request = CreateVideoItemInput;
 async function main(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
   const request = event.body as unknown as Request;
 
+  const claims = (event.requestContext?.authorizer as any)?.jwt?.claims ?? {};
+  const userSub = claims.sub; // Cognito userpool sub
+
+  if (!userSub || request.userId !== userSub) {
+    return {
+      statusCode: 403,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: 'Forbidden' })
+    };
+  }
+
   const videoMetadata = await createVideoItem({
     ...request
   });

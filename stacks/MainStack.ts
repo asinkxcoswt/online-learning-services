@@ -1,11 +1,20 @@
-import { Api, StackContext, Table, Bucket } from 'sst/constructs';
+import { Api, StackContext, Table, Bucket, Cognito } from 'sst/constructs';
 import { resolveStackConfig } from './configurations';
 import { RemovalPolicy } from 'aws-cdk-lib/core';
 import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { ObjectOwnership } from 'aws-cdk-lib/aws-s3';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 
 export function MainStack({ stack }: StackContext) {
   const config = resolveStackConfig(stack);
+
+  const userPoolIdParam = '/online-learning/cognito/user_pool_id';
+  const userPoolClientIdParam = '/online-learning/cognito/user_pool_client_id';
+
+  const userPoolId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolIdParam', userPoolIdParam).stringValue;
+
+  const userPoolClientId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolClientIdParam', userPoolClientIdParam).stringValue;
 
   const videoTable = new Table(stack, 'VideosTable', {
     fields: {
@@ -55,7 +64,17 @@ export function MainStack({ stack }: StackContext) {
       allowMethods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
       allowOrigins: ['*']
     },
+    authorizers: {
+      jwt: {
+        type: 'user_pool',
+        userPool: {
+          id: userPoolId,
+          clientIds: [userPoolClientId]
+        }
+      }
+    },
     defaults: {
+      authorizer: 'jwt',
       function: {
         timeout: '30 seconds',
         copyFiles: [{ from: 'data', to: 'data' }],
