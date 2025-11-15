@@ -19,6 +19,48 @@ https://altimetry-geoscientist-13134586-5760781.postman.co/workspace/Pawz-(%E0%B
 
 ## Example Requests
 
+### Register
+
+```
+curl --location 'https://cognito-idp.us-east-1.amazonaws.com/' \
+--header 'Content-Type: application/x-amz-json-1.1' \
+--header 'X-Amz-Target: AWSCognitoIdentityProviderService.SignUp' \
+--data-raw '{
+    "ClientId": "<your_cognito_client_id>",
+    "Username": "your-email@example.com",
+    "Password": "YourStrongPassword123!"
+}'
+```
+
+### Confirm Email
+
+```
+curl --location 'https://cognito-idp.us-east-1.amazonaws.com/' \
+--header 'Content-Type: application/x-amz-json-1.1' \
+--header 'X-Amz-Target: AWSCognitoIdentityProviderService.ConfirmSignUp' \
+--data-raw '{
+    "ClientId": "<your_cognito_client_id>",
+    "Username": "your-email@example.com",
+    "ConfirmationCode": "123456"
+}'
+```
+
+### Get Token
+
+```
+curl --location 'https://cognito-idp.us-east-1.amazonaws.com/' \
+--header 'Content-Type: application/x-amz-json-1.1' \
+--header 'X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth' \
+--data-raw '{
+    "AuthFlow": "USER_PASSWORD_AUTH",
+    "ClientId": "<your_cognito_client_id>",
+    "AuthParameters": {
+        "USERNAME": "your-email@example.com",
+        "PASSWORD": "YourStrongPassword123!"
+    }
+}'
+```
+
 ### POST /upload
 
 **Request**
@@ -26,6 +68,7 @@ https://altimetry-geoscientist-13134586-5760781.postman.co/workspace/Pawz-(%E0%B
 ```
 curl --location 'https://vjeilcwurd.execute-api.us-east-1.amazonaws.com/upload' \
 --header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <access_token>'
 --data '{
 	"title": "Test video",
     "userId": "1234",
@@ -62,7 +105,11 @@ curl -X PUT \
 ### GET /video/{id}
 
 ```
-curl --location 'https://vjeilcwurd.execute-api.us-east-1.amazonaws.com/videos/1234-84361b71-9c05-4dbc-b6ba-1b56116b674b' --header 'Content-Type: application/json'
+curl --header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <access_token>' \
+--location 'https://vjeilcwurd.execute-api.us-east-1.amazonaws.com/videos/1234-84361b71-9c05-4dbc-b6ba-1b56116b674b'
+
+
 ```
 
 (replace the `1234-84361b71-9c05-4dbc-b6ba-1b56116b674b` with your id from the upload response)
