@@ -9,17 +9,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 export function MainStack({ stack }: StackContext) {
   const config = resolveStackConfig(stack);
 
-  const userPoolIdParam = '/online-learning/cognito/user_pool_id';
-  const userPoolClientIdParam = '/online-learning/cognito/user_pool_client_id';
+  const userPoolId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolIdParam', config.SSM.COGNITO_USER_POOL_ID_).stringValue;
+  const userPoolClientId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolClientIdParam', config.SSM.COGNITO_CLIENT_ID).stringValue;
 
-  const userPoolId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolIdParam', userPoolIdParam).stringValue;
-  const userPoolClientId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolClientIdParam', userPoolClientIdParam).stringValue;
+  const cloudfrontDomain = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontDomainParam', config.SSM.CLOUDFRONT_DOMAIN).stringValue;
+  const cloudfrontSigningKeyPairId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontSingningKeyPairIdParam', config.SSM.CLOUDFRONT_SIGNING_KEY_ID).stringValue;
+  const videoBucketName = ssm.StringParameter.fromStringParameterName(stack, 'ImportedVideoBucketNameParam', config.SSM.VIDEO_BUCKET_NAME).stringValue;
 
-  const cloudfrontDomain = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontDomainParam', '/online-learning/cloudfront/domain').stringValue;
-  const cloudfrontSigningKeyPairId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontSingningKeyPairIdParam', '/online-learning/cloudfront/signing-key-id').stringValue;
-  const videoBucketName = ssm.StringParameter.fromStringParameterName(stack, 'ImportedVideoBucketNameParam', '/online-learning/s3/video-bucket-name').stringValue;
-
-  const serviceRoleArn = ssm.StringParameter.fromStringParameterName(stack, 'ImportedIamServiceRoleArnParam', '/online-learning/iam/video-service-role-arn').stringValue;
+  const serviceRoleArn = ssm.StringParameter.fromStringParameterName(stack, 'ImportedIamServiceRoleArnParam', config.SSM.SERVICE_ROLE_ARN).stringValue;
 
   const videoTable = new Table(stack, 'VideosTable', {
     fields: {
@@ -87,7 +84,7 @@ export function MainStack({ stack }: StackContext) {
         environment: {
           DEBUG: 'axios*',
           CF_DISTRIBUTION_DOMAIN: cloudfrontDomain,
-          CF_SIGNING_KEY_PARAM_NAME: '/online-learning/cf-signing-key/private',
+          CF_SIGNING_KEY_PARAM_NAME: config.SSM.CLOUDFRONT_SIGNING_PRIVATE_KEY,
           CF_KEY_PAIR_ID: cloudfrontSigningKeyPairId,
           VIDEO_BUCKET_NAME: videoBucketName,
           SERVICE_ROLE_ARN: serviceRoleArn
