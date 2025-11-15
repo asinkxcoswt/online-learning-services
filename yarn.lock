@@ -2043,6 +2043,15 @@
     "@smithy/util-utf8" "^4.2.0"
     tslib "^2.6.2"
 
+"@aws-sdk/cloudfront-signer@^3.930.0":
+  version "3.930.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/cloudfront-signer/-/cloudfront-signer-3.930.0.tgz#c3a5f696e91ce3ad3411d1a13b03d4525ef774fa"
+  integrity sha512-fqoUPI8FaUlVb+1HVWJca12HkGyWO9oTlp62NUhRAW1nF+KdCSJpOPopVByD3CR9N1eV3olmVCWkO4NwvmLYTg==
+  dependencies:
+    "@smithy/core" "^3.18.2"
+    "@smithy/url-parser" "^4.2.5"
+    tslib "^2.6.2"
+
 "@aws-sdk/config-resolver@3.374.0":
   version "3.374.0"
   resolved "https://registry.yarnpkg.com/@aws-sdk/config-resolver/-/config-resolver-3.374.0.tgz#753dd47066365be611755a74515235d54e72e10b"
@@ -4315,6 +4324,22 @@
     "@smithy/uuid" "^1.1.0"
     tslib "^2.6.2"
 
+"@smithy/core@^3.18.2":
+  version "3.18.4"
+  resolved "https://registry.yarnpkg.com/@smithy/core/-/core-3.18.4.tgz#3f14433c2569fef93b69e4dfa71455fb7b2be2b2"
+  integrity sha512-o5tMqPZILBvvROfC8vC+dSVnWJl9a0u9ax1i1+Bq8515eYjUJqqk5XjjEsDLoeL5dSqGSh6WGdVx1eJ1E/Nwhw==
+  dependencies:
+    "@smithy/middleware-serde" "^4.2.6"
+    "@smithy/protocol-http" "^5.3.5"
+    "@smithy/types" "^4.9.0"
+    "@smithy/util-base64" "^4.3.0"
+    "@smithy/util-body-length-browser" "^4.2.0"
+    "@smithy/util-middleware" "^4.2.5"
+    "@smithy/util-stream" "^4.5.6"
+    "@smithy/util-utf8" "^4.2.0"
+    "@smithy/uuid" "^1.1.0"
+    tslib "^2.6.2"
+
 "@smithy/credential-provider-imds@^3.2.6", "@smithy/credential-provider-imds@^3.2.8":
   version "3.2.8"
   resolved "https://registry.yarnpkg.com/@smithy/credential-provider-imds/-/credential-provider-imds-3.2.8.tgz#27ed2747074c86a7d627a98e56f324a65cba88de"
@@ -4691,6 +4716,15 @@
   version "4.2.5"
   resolved "https://registry.yarnpkg.com/@smithy/middleware-serde/-/middleware-serde-4.2.5.tgz#b8848043d2965ef3fc2ad895c877fa1f42a9cd86"
   integrity sha512-La1ldWTJTZ5NqQyPqnCNeH9B+zjFhrNoQIL1jTh4zuqXRlmXhxYHhMtI1/92OlnoAtp6JoN7kzuwhWoXrBwPqg==
+  dependencies:
+    "@smithy/protocol-http" "^5.3.5"
+    "@smithy/types" "^4.9.0"
+    tslib "^2.6.2"
+
+"@smithy/middleware-serde@^4.2.6":
+  version "4.2.6"
+  resolved "https://registry.yarnpkg.com/@smithy/middleware-serde/-/middleware-serde-4.2.6.tgz#7e710f43206e13a8c081a372b276e7b2c51bff5b"
+  integrity sha512-VkLoE/z7e2g8pirwisLz8XJWedUSY8my/qrp81VmAdyrhi94T+riBfwP+AOEEFR9rFTSonC/5D2eWNmFabHyGQ==
   dependencies:
     "@smithy/protocol-http" "^5.3.5"
     "@smithy/types" "^4.9.0"

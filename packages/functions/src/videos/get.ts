@@ -1,4 +1,5 @@
 import { getFileUrl } from '@online-learning/core/files/getFileUrl';
+import { getCloudFrontSignedUrl } from '@online-learning/core/files/getCloudFrontSignedUrl';
 import { getVideoItem } from '@online-learning/core/videos/getVideoItem';
 import { JSONSchemaType } from 'ajv';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
@@ -25,7 +26,8 @@ async function main(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult>
     };
   }
 
-  const presignUrl = await getFileUrl(videoMetadata.s3Key);
+  // const presignUrl = await getFileUrl(videoMetadata.s3Key);
+  const presignUrl = await getCloudFrontSignedUrl(videoMetadata.s3Key);
 
   return {
     headers: {

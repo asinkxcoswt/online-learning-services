@@ -4,7 +4,7 @@ import { RemovalPolicy } from 'aws-cdk-lib/core';
 import { BillingMode } from 'aws-cdk-lib/aws-dynamodb';
 import { ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 export function MainStack({ stack }: StackContext) {
   const config = resolveStackConfig(stack);
@@ -13,8 +13,13 @@ export function MainStack({ stack }: StackContext) {
   const userPoolClientIdParam = '/online-learning/cognito/user_pool_client_id';
 
   const userPoolId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolIdParam', userPoolIdParam).stringValue;
-
   const userPoolClientId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedUserPoolClientIdParam', userPoolClientIdParam).stringValue;
+
+  const cloudfrontDomain = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontDomainParam', '/online-learning/cloudfront/domain').stringValue;
+  const cloudfrontSigningKeyPairId = ssm.StringParameter.fromStringParameterName(stack, 'ImportedCloudfrontSingningKeyPairIdParam', '/online-learning/cloudfront/signing-key-id').stringValue;
+  const videoBucketName = ssm.StringParameter.fromStringParameterName(stack, 'ImportedVideoBucketNameParam', '/online-learning/s3/video-bucket-name').stringValue;
+
+  const serviceRoleArn = ssm.StringParameter.fromStringParameterName(stack, 'ImportedIamServiceRoleArnParam', '/online-learning/iam/video-service-role-arn').stringValue;
 
   const videoTable = new Table(stack, 'VideosTable', {
     fields: {
@@ -81,7 +86,11 @@ export function MainStack({ stack }: StackContext) {
         bind: [videoTable, videoBucket],
         environment: {
           DEBUG: 'axios*',
-          VIDEO_TABLE_NAME: videoTable.tableName
+          CF_DISTRIBUTION_DOMAIN: cloudfrontDomain,
+          CF_SIGNING_KEY_PARAM_NAME: '/online-learning/cf-signing-key/private',
+          CF_KEY_PAIR_ID: cloudfrontSigningKeyPairId,
+          VIDEO_BUCKET_NAME: videoBucketName,
+          SERVICE_ROLE_ARN: serviceRoleArn
         },
         vpc: config.vpc as any,
         vpcSubnets: config.vpcSubnets as any,
@@ -94,6 +103,19 @@ export function MainStack({ stack }: StackContext) {
     },
     customDomain: config.customDomains?.functions
   });
+
+  api.attachPermissions([
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['sts:AssumeRole'],
+      resources: [serviceRoleArn]
+    }),
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+      resources: [`arn:aws:ssm:${stack.region}:${stack.account}:parameter/online-learning/cf-signing-key/private`]
+    })
+  ]);
 
   stack.addOutputs({
     apiEndpoint: api.url

@@ -5,7 +5,8 @@ import { Bucket } from 'sst/node/bucket';
 const s3 = new S3Client({});
 
 export async function getFileUrl(s3Key: string) {
-  const bucketName = Bucket['video-bucket'].bucketName;
+  // const bucketName = Bucket['video-bucket'].bucketName;
+  const bucketName = process.env.VIDEO_BUCKET_NAME!;
   const url = await getSignedUrl(
     s3,
     new GetObjectCommand({
